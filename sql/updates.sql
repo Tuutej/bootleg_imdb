@@ -1,0 +1,1 @@
+UPDATE movie SET genre = 'Black comedy thriller' WHERE id = 5;
