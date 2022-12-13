@@ -33,40 +33,49 @@ public class EditMovieServlet extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		try {
+			System.out.println("doPost() method called with request method: " + request.getMethod());
 
-		System.out.println("doPost() method called with request method: " + request.getMethod());
+			int movieId = Integer.parseInt(request.getParameter("id"));
 
-		int movieId = Integer.parseInt(request.getParameter("id"));
+			// Printta elokuvan id konsoliin
+			System.out.println("Movie ID: " + movieId);
 
-		// Printta elokuvan id konsoliin
-		System.out.println("Movie ID: " + movieId);
+			Movie movie = Movie.findById(movieId);
 
-		Movie movie = Movie.findById(movieId);
-
-		if (movie == null) {
-			System.out.println("Movie not found with ID: " + movieId);
-		} else {
-			System.out.println("Movie: " + movie);
-
-			movie.setName(request.getParameter("name"));
-			movie.setDirector(request.getParameter("director"));
-			movie.setGenre(request.getParameter("genre"));
-			movie.setReleaseYear(Integer.parseInt(request.getParameter("releaseYear")));
-			movie.setRuntimeMinutes(Integer.parseInt(request.getParameter("runtimeMinutes")));
-			movie.setBoxOfficeUsd(Double.parseDouble(request.getParameter("boxOfficeUsd")));
-
-			// tallenetaan muutokset tietokantaan.
-			MovieDao moviedao = new MovieJdbcDao();
-			boolean editSuccess = moviedao.editMovie(movie);
-
-			if (editSuccess) {
-
-				response.sendRedirect("/listaa-elokuvat");
+			if (movie == null) {
+				System.out.println("Movie not found with ID: " + movieId);
 			} else {
-				request.setAttribute("viesti", "Elokuvan muokkauksessa tietokantaan tapahtui virhe.");
+				System.out.println("Movie: " + movie);
 
-				request.getRequestDispatcher("/WEB-INF/report.jsp").forward(request, response);
+				movie.setName(request.getParameter("name"));
+				movie.setDirector(request.getParameter("director"));
+				movie.setGenre(request.getParameter("genre"));
+				movie.setReleaseYear(Integer.parseInt(request.getParameter("releaseYear")));
+				movie.setRuntimeMinutes(Integer.parseInt(request.getParameter("runtimeMinutes")));
+				movie.setBoxOfficeUsd(Double.parseDouble(request.getParameter("boxOfficeUsd")));
+
+				// tallenetaan muutokset tietokantaan.
+				MovieDao moviedao = new MovieJdbcDao();
+				boolean editSuccess = moviedao.editMovie(movie);
+
+				if (editSuccess) {
+
+					response.sendRedirect("/listaa-elokuvat");
+				} else {
+					request.setAttribute("viesti", "Elokuvan muokkauksessa tietokantaan tapahtui virhe.");
+
+					request.getRequestDispatcher("/WEB-INF/report.jsp").forward(request, response);
+				}
 			}
+		} catch (NumberFormatException e) {
+
+			e.printStackTrace(); // tulostetaan Consoleen virhetilanteessa metodikutsupinoa, josta näkee
+									// rivinumeron, jossa Exception tapahtuu
+
+			request.setAttribute("viesti", "Elokuva-lomakkeella syötetyt tiedot eivät olleet kelvolliset.");
+			// servlet kutsuu jsp:tä
+			request.getRequestDispatcher("/WEB-INF/report.jsp").forward(request, response);
 		}
 	}
 }

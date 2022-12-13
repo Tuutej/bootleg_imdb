@@ -13,6 +13,7 @@ pageEncoding="ISO-8859-1"%>
   </head>
   <body>
     <h1>Bootleg IMDb</h1>
+    <a href="http://localhost:8080/hallinta">Hallintasivu</a>
     <table class="table table_striped">
       <tr>
         <th>Id</th>
@@ -47,6 +48,5 @@ pageEncoding="ISO-8859-1"%>
         </tr>
       </c:forEach>
     </table>
-    <a href="http://localhost:8080/hallinta">Hallintasivu</a>
   </body>
 </html>
